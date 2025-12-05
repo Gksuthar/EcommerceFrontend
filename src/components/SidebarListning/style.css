@@ -1,0 +1,30 @@
+.sidebar-listning {
+    max-height: 100%; /* Use 100% instead of "full" */
+    overflow-y: auto; /* Allows scrolling but hides scrollbar */
+    overflow-x: hidden;
+    border: 1px solid lightgray;
+}
+
+/* Hide scrollbar for WebKit browsers */
+.sidebar-listning::-webkit-scrollbar {
+    width: 0px; /* Makes scrollbar invisible */
+    height: 0px;
+    display: none;
+}
+
+.sidebar-listning {
+    scrollbar-width: none; /* Hides scrollbar in Firefox */
+    -ms-overflow-style: none; /* Hides scrollbar in IE & Edge */
+}
+.range-slider .range-slider__thumb{
+
+    width: 14px !important;
+    height: 14px !important;
+}
+.range-slider .range-slider__thumb, .range-slider .range-slider__range{
+    background:  #ff5252 !important;
+}
+
+.range-slider{
+height: 3px !important;
+}
