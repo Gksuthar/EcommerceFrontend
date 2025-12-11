@@ -53,7 +53,7 @@ const CartPanelData = ({lenghtOfCart}) => {
 
   return (
     <>
-      <div className="scroll max-h-[300px] w-full overflow-y-auto">
+      <div className="scroll h-[60%]  w-full overflow-y-auto">
         {cartData && cartData.map((item, index) => (
           <div key={index} className="cartItem w-full flex items-center gap-4 border-b border[rgba(0,0,0,0.2)] pb-4">
             <div className="img w-[30%] overflow-hidden h-[80px] rounded-md">
@@ -83,7 +83,8 @@ const CartPanelData = ({lenghtOfCart}) => {
           </div>
         ))}
       </div>
-      <div className="bottomSection absolute bottom-[10px] left-[10px] w-full overflow-hidden pr-5">
+
+      <div className="bottomSection h-[30%] absolute bottom-[0px]  left-[10px] w-full overflow-hidden pr-5">
         <div className="bottomInfo w-full border-t px-4 py-3 border-[rgba(0,0,0,0.2)] flex items-center justify-between flex-col">
           <div className="flex items-center justify-between w-full">
             <span className="font-[600] text-[14px]">{cartData.length} item(s)</span>

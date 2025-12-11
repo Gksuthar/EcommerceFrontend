@@ -128,7 +128,7 @@ useEffect(() => {
       );
 
       const options = {
-        key: import.meta.env.VITE_RAZORPAY_KEY || "rzp_test_RmCn1GmKVs0hms",
+        key: import.meta.env.VITE_RAZORPAY_KEY,
         amount: data.amount,
         currency: "INR",
         name: "Ganesh Store",
@@ -237,7 +237,7 @@ useEffect(() => {
                     {/* Product Image */}
                     <div className="w-full sm:w-32 h-32 flex-shrink-0 bg-gray-50 rounded-lg overflow-hidden flex items-center justify-center">
                       <img
-                        src={item.productId?.images?.[0] || "/path/to/default-image.jpg"}
+                        src={item.productId?.images?.[0]}
                         alt={item.productId?.name || "Product Image"}
                         className="h-full w-full object-contain"
                       />

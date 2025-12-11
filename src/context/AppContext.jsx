@@ -102,7 +102,12 @@ const AppProvider = ({ children }) => {
             setWishlistLen(response.data.data?.length || 0);
           }
         } catch (error) {
-          console.error("Wishlist fetch error:", error);
+          // Handle empty wishlist or errors gracefully
+          if (error.response?.status === 404 || error.response?.status === 200) {
+            setWishlistLen(0);
+          } else {
+            console.error("Wishlist fetch error:", error);
+          }
         }
       };
       fetchWishlistCount();

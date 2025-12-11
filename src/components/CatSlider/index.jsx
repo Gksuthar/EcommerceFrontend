@@ -10,9 +10,8 @@ import { MyContext } from '../../App';
 const CategorySlider = () => {
   const context = useContext(MyContext);
   const categories = context?.categoryData || [];
-  // Debug log to confirm categories available in this component
   console.log('[DEBUG] CatSlider categories length:', categories.length, categories && categories.slice ? categories.slice(0,5) : categories);
-
+  // Home me Hero section after
   return (
     <div className="homecatSlider py-3 sm:py-8 pt-4">
       <div className="container">
@@ -48,7 +47,7 @@ const CategorySlider = () => {
             return categories.map((cat, idx) => {
               // prefer first image from backend if present and looks like a URL; otherwise use fallback
               let imageSrc = null;
-              if (Array.isArray(cat.images) && cat.images.length > 0) imageSrc = cat.images[0];
+              if (cat.images && cat.images.length > 0) imageSrc = cat.images;
               const image = imageSrc;
               const routeName = `/productListning/${encodeURIComponent(cat.name)}`;
                 return (

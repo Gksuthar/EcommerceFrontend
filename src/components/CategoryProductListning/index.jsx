@@ -17,40 +17,35 @@ import CircularProgress from "@mui/material/CircularProgress";
 const CategoryProductListning = ({ category, sortBy, priceRange, setPriceRange, selectedSubCategory, selectedThirdCategory }) => {
  
 
-const [filteredProducts, setFilteredProducts] = useState([]);   // products after filter/sort
-const [cartData, setCartData] = useState([]);                   // user cart
-const [currentPage, setCurrentPage] = useState(1);              // pagination page
-const [loadingStates, setLoadingStates] = useState({});         // loading per product (add to cart)
-const [isCartLoading, setCartLoading] = useState(false);        // cart loading
+const [filteredProducts, setFilteredProducts] = useState([]);  
+const [cartData, setCartData] = useState([]);                   
+const [currentPage, setCurrentPage] = useState(1);            
+const [loadingStates, setLoadingStates] = useState({});        
+const [isCartLoading, setCartLoading] = useState(false);       
 
 // Context + API URL
 const context = useContext(MyContext);
 const url = context.AppUrl;
 const token = localStorage.getItem("accessToken");
 
-// Pagination values
+
 const productsPerPage = 8;
 const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
 const startIndex = (currentPage - 1) * productsPerPage;
 const paginatedProducts = filteredProducts.slice(startIndex, startIndex + productsPerPage);
 
 
-// -------------------------
-// HELPER: normalize string
-// -------------------------
+
 const normalize = (value) => {
   if (!value) return "";
   return decodeURIComponent(String(value)).toLowerCase().trim();
 };
 
 
-// -------------------------
-// FILTER PRODUCTS WHEN category/sub-category/priceRange CHANGE
-// -------------------------
+// filter category whan ever depexndencies change
 useEffect(() => {
   if (!context.allProduct?.length || !category) return;
 
-  // Normalize category values
   const mainCategory = normalize(category);
   const subCategory = normalize(selectedSubCategory);
   const thirdCategory = normalize(selectedThirdCategory);
@@ -65,18 +60,14 @@ useEffect(() => {
     result = result.filter((p) => normalize(p.subCat) === subCategory);
   }
 
-  // 3️⃣ Filter third category (if selected)
   if (thirdCategory) {
     result = result.filter((p) => normalize(p.thirdSubCat) === thirdCategory);
   }
 
-  // 4️⃣ Apply sorting
   result = getSortedProduct(result, sortBy);
 
-  // 5️⃣ Apply price range filter
   result = filterByPriceRange(result, priceRange);
 
-  // update filtered state
   setFilteredProducts(result);
   setCurrentPage(1);
 }, [
@@ -89,14 +80,13 @@ useEffect(() => {
 ]);
 
 
-// FILTER BY PRICE RANGE
 const filterByPriceRange = (products, priceRange) => {
   const [min, max] = priceRange;
   return products.filter((p) => p.price >= min && p.price <= max);
 };
 
 
-// SORT PRODUCTS
+
 const getSortedProduct = (products, sortBy) => {
   const sorted = [...products];
 
@@ -122,7 +112,7 @@ const getSortedProduct = (products, sortBy) => {
 };
 
 
-// GET CART DATA (IF LOGGED IN)
+// this is use to get cart data 
 useEffect(() => {
   if (!token) return; // user not logged in => skip
 
@@ -147,7 +137,6 @@ useEffect(() => {
 }, [url, token]);
 
 
-// ADD TO CART
 const addToCart = async (productId) => {
   setLoadingStates((prev) => ({ ...prev, [productId]: true }));
 
@@ -175,7 +164,6 @@ const addToCart = async (productId) => {
 };
 
 
-// UPDATE CART QUANTITY
 const updateQty = async (id, qty) => {
   setLoadingStates((prev) => ({ ...prev, [id]: true }));
 
@@ -201,7 +189,6 @@ const updateQty = async (id, qty) => {
 };
 
 
-// WISHLIST
 const addProductInWishlist = async (id, rating, price, oldPrice, brand, discount) => {
   try {
     await axios.post(
@@ -218,7 +205,6 @@ const addProductInWishlist = async (id, rating, price, oldPrice, brand, discount
 };
 
 
-// PAGINATION HANDLER
 const handlePageChange = (_, pageNum) => {
   setCurrentPage(pageNum);
 };

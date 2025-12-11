@@ -59,7 +59,9 @@ const SidebarListning = ({
     const subs = parent?.children || [];
     const selectedSub = subs.find((s) => s.name === selectedSubCategory);
     setThirdCategories(selectedSub?.children || []);
+    
   }, [selectedSubCategory, categoryData, selectedCategory]);
+
   const handleSubCategoryChange = (subCategoryName, isChecked) => {
     setSelectedSubCategory(isChecked ? subCategoryName : "");
   };

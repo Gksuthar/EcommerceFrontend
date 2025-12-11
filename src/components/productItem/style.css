@@ -12,11 +12,11 @@
   }
   
   .productItem .img {
-    background-color: #FFFFF7; /* Gray background */
+    background-color: #FFFFF7; 
   }
   
   .productItem .info div {
-    background-color: #FFFFF7; /* Slightly darker gray for lines */
+    background-color: #FFFFF7; 
     border-radius: 4px;
   }
   

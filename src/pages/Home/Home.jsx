@@ -41,10 +41,10 @@ const Home = () => {
     fetchBlogs();
   }, [context.AppUrl]);
 
-  const handleChange = (event, newValue) => {
-
-    setSelectedTab(context.categoryData[newValue].name);
-    setValue(newValue);
+  const handleChangeCategory = (event, indx) => {
+    
+    setSelectedTab(context.categoryData[indx].name);
+    setValue(indx);
   };
 
   return (
@@ -91,9 +91,7 @@ const Home = () => {
             <div className="rightSecreenCat w-[100%] sm:w-[60%] flex sm:justify-end">
               <Tabs
                 value={value}
-                onChange={handleChange}
-                textColor="primary"
-                indicatorColor="secondary"
+                onChange={handleChangeCategory}
                 variant="scrollable"
                 scrollButtons={false}
                 allowScrollButtonsMobile

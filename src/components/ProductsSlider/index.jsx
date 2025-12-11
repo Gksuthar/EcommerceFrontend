@@ -67,8 +67,11 @@ const ProductsSlider = ({ items, selectedTab }) => {
               768: {
                 slidesPerView: 3,
               },
-              1024: {
-                slidesPerView: items || 4,
+              1224: {
+                slidesPerView: 4,
+              },
+              1440: {
+                slidesPerView: items,
               },
             }}
           >

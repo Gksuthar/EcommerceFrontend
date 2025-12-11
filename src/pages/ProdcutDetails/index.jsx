@@ -27,6 +27,7 @@ const ProductDetails = () => {
   const [activeTab, setActiveTab] = useState(0);
   const [data, setData] = useState();
   const [error, setError] = useState(null);
+  const [productCategory, setProductCategory] = useState("");
 
   const setProductActionIndex = (index) => {
     setProActionIndex(index);
@@ -47,6 +48,7 @@ const ProductDetails = () => {
         });
 
         if (response.status === 200) {
+          setProductCategory(response.data.product.catName);
           setData(response.data.product);
         }
       } catch (error) {
@@ -181,79 +183,96 @@ const ProductDetails = () => {
           />
         </div>
       )}
-      <div className="py-2 sm:py-5">
-        <div className="sm:container ">
-          <Breadcrumbs aria-label="breadcrumb" className="mb-4">
+      
+      <div className="py-3 sm:py-6 bg-gray-50">
+        <div className="container">
+          <Breadcrumbs aria-label="breadcrumb" className="text-sm">
             <Link
-              underline="hover"
-              color="inherit"
-              href="/"
-              className="text-blue-600 hover:underline"
+              to="/"
+              className="text-gray-600 hover:text-blue-600 transition-colors"
             >
               Home
             </Link>
             <Link
-              underline="hover"
-              color="inherit"
-              href="/"
-              className="text-blue-600 hover:underline"
+              to="/"
+              className="text-gray-600 hover:text-blue-600 transition-colors"
             >
-              Fashion
+              {productCategory}
             </Link>
+            <span className="text-gray-900 font-medium">{data?.name?.substring(0, 30)}...</span>
           </Breadcrumbs>
         </div>
       </div>
-      <section className="bg-white py-2 sm:pl-10">
+      
+      <section className="bg-white py-6 sm:py-10">
+        {/* Mobile View */}
         <div className="block sm:hidden">
-          <div className="container flex flex-col gap-4">
-            <div className="productZoomContainer w-full h-[350px] overflow-hidden">
+          <div className="container flex flex-col gap-6">
+            <div className="productZoomContainer w-full h-[400px]">
               {data && <ProductZoom data={data} />}
             </div>
-            <div className="productContent w-full">
-              {data && <ProductDetailsComponents data={data} />}
+            <div className="productContent w-full px-4">
+              {data && <ProductDetailsComponents data={data} length={totalReview} />}
             </div>
           </div>
         </div>
 
+        {/* Desktop View */}
         <div className="hidden sm:block">
-          <div className=" container flex gap-8">
-            <div className="productZoomContainer sm:w-[40%] sm:h-[70vh] overflow-hidden">
-              {data && <ProductZoom data={data} />}
-            </div>
-            <div className="productContent  sm:w-[60%]">
-              {data && (
-                <ProductDetailsComponents data={data} length={totalReview} />
-              )}
+          <div className="container">
+            <div className="flex gap-8 lg:gap-12">
+              {/* Product Images */}
+              <div className="w-full lg:w-[45%] xl:w-[40%]">
+                <div className="sticky top-24 h-[600px]">
+                  {data && <ProductZoom data={data} />}
+                </div>
+              </div>
+              
+              {/* Product Details */}
+              <div className="flex-1">
+                {data && (
+                  <ProductDetailsComponents data={data} length={totalReview} />
+                )}
+              </div>
             </div>
           </div>
         </div>
 
-        <div className="container pt-3 sm:pt-10">
-          <div className="flex items-center justify-between sm:justify-start mt-6 sm:mt-2 gap-8 mb-5 ">
-            <span
-              onClick={() => setActiveTab(0)}
-              className={`link text-[18px] cursor-pointer font-[500] transition ${
-                activeTab === 0 ? "text-primary" : ""
-              }`}
-            >
-              Description
-            </span>
-            <span
-              onClick={() => setActiveTab(1)}
-              className={`link text-[18px] cursor-pointer font-[500] transition ${
-                activeTab === 1 ? "text-primary" : ""
-              }`}
-            >
-              Product
-            </span>
-            <span
-              onClick={() => setActiveTab(2)}
-              className={`link text-[18px] cursor-pointer font-[500] transition ${
-                activeTab === 2 ? "text-primary" : ""
-              }`}
-            >
-              Review (5)
-            </span>
+        <div className="container pt-8 sm:pt-12">
+          {/* Tabs Navigation */}
+          <div className="border-b border-gray-200 mb-8">
+            <div className="flex items-center gap-1 sm:gap-4">
+              <button
+                onClick={() => setActiveTab(0)}
+                className={`px-4 sm:px-6 py-3 text-sm sm:text-base font-medium transition-all relative ${
+                  activeTab === 0
+                    ? 'text-blue-600 border-b-2 border-blue-600'
+                    : 'text-gray-600 hover:text-gray-900 hover:border-b-2 hover:border-gray-300'
+                }`}
+              >
+                Description
+              </button>
+              <button
+                onClick={() => setActiveTab(1)}
+                className={`px-4 sm:px-6 py-3 text-sm sm:text-base font-medium transition-all relative ${
+                  activeTab === 1
+                    ? 'text-blue-600 border-b-2 border-blue-600'
+                    : 'text-gray-600 hover:text-gray-900 hover:border-b-2 hover:border-gray-300'
+                }`}
+              >
+                Specifications
+              </button>
+              <button
+                onClick={() => setActiveTab(2)}
+                className={`px-4 sm:px-6 py-3 text-sm sm:text-base font-medium transition-all relative ${
+                  activeTab === 2
+                    ? 'text-blue-600 border-b-2 border-blue-600'
+                    : 'text-gray-600 hover:text-gray-900 hover:border-b-2 hover:border-gray-300'
+                }`}
+              >
+                Reviews ({totalReview})
+              </button>
+            </div>
           </div>
 
           {activeTab === 0 && (
@@ -418,9 +437,7 @@ const ProductDetails = () => {
           <h2 className="text-[20px] font-[600] pb-1 mt-8">Related Product</h2>
         </div>
         <ProductsSlider items={6} selectedTab={data?.catName} />
-        {/* <div className="container">
-
-        </div> */}
+       
       </section>
     </>
   );
