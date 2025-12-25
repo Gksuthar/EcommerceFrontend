@@ -1,5 +1,4 @@
 import React, { forwardRef, useImperativeHandle, useState } from "react";
-import PropTypes from "prop-types";
 import {
   TextField,
   Button,
@@ -12,6 +11,7 @@ import {
 import axios from "axios";
 import { MyContext } from "../../App";
 import { useContext } from "react";
+
 const AddressForm = forwardRef((props, ref) => {
   const [formData, setFormData] = useState({
     address_line: "",
@@ -23,29 +23,33 @@ const AddressForm = forwardRef((props, ref) => {
     status: true,
     userId: "",
   });
-
   const [loading, setLoading] = useState(false);
   const context = useContext(MyContext);
   const url = context.AppUrl;
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+    const name = e.target.name;
+    const value = e.target.value;
+    setFormData((prevData) => {
+      return {
+        ...prevData,
+        [name]: value,
+      };
+    });
   };
 
   const handleSubmit = async (e) => {
-    if (e) e.preventDefault(); // Prevent default form submission if called from an event
+    if (e) {
+      e.preventDefault();
+    }
     setLoading(true);
-    const token = localStorage.getItem('accessToken');
-
+    const token = localStorage.getItem("accessToken");
     try {
-      const response = await axios.post(`${url}/api/address/addAddress`, formData, {
-        headers: { Authorization: `Bearer ${token}` },
+      const response = await axios.post(url + "/api/address/addAddress", formData, {
+        headers: {
+          Authorization: "Bearer " + token,
+        },
       });
-
       if (response.status === 201) {
         props.onSubmit(response.data);
         setFormData({
@@ -63,16 +67,15 @@ const AddressForm = forwardRef((props, ref) => {
     } catch (error) {
       console.error("Error saving address:", error);
       alert("Failed to save address. Please try again.");
-      return false; // Indicate failure
+      return false;
     } finally {
       setLoading(false);
     }
   };
 
-  // Expose the submitForm method to the parent component
   useImperativeHandle(ref, () => ({
     submitForm: () => {
-      return handleSubmit(); // Programmatically submit the form
+      return handleSubmit();
     },
   }));
 
@@ -140,14 +143,15 @@ const AddressForm = forwardRef((props, ref) => {
           <FormControlLabel
             control={
               <Checkbox
-                name="status"
                 checked={formData.status}
-                onChange={(e) =>
-                  setFormData((prevData) => ({
-                    ...prevData,
-                    status: e.target.checked,
-                  }))
-                }
+                onChange={(e) => {
+                  setFormData((prevData) => {
+                    return {
+                      ...prevData,
+                      status: e.target.checked,
+                    };
+                  });
+                }}
               />
             }
             label="Status"
@@ -168,6 +172,6 @@ const AddressForm = forwardRef((props, ref) => {
     </Container>
   );
 });
-AddressForm.displayName = "AddressForm";
 
+AddressForm.displayName = "AddressForm";
 export default AddressForm;

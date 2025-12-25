@@ -15,16 +15,12 @@ const Checkout = () => {
   const [deliveryAddress, setDeliveryAddress] = useState(null);
   const [paymentLoading, setPaymentLoading] = useState(false);
   const addressFormRef = useRef(null);
-
   const PLATFORM_CHARGE = 100;
   const SHIPPING_CHARGE = 100;
   const token = localStorage.getItem("accessToken");
   const context = useContext(MyContext);
   const url = context.AppUrl;
-
-  const finalAmount = Math.round(
-    totalSellingPrice + PLATFORM_CHARGE + SHIPPING_CHARGE
-  );
+  const finalAmount = Math.round(totalSellingPrice + PLATFORM_CHARGE + SHIPPING_CHARGE);
 
   useEffect(() => {
     const getCartData = async () => {
@@ -33,8 +29,10 @@ const Checkout = () => {
           setCartData([]);
           return;
         }
-        const response = await axios.get(`${url}/api/cart/get`, {
-          headers: { Authorization: `Bearer ${token}` },
+        const response = await axios.get(url + "/api/cart/get", {
+          headers: {
+            Authorization: "Bearer " + token,
+          },
         });
         if (response.status === 200) {
           setCartData(response.data.data);
@@ -54,23 +52,20 @@ const Checkout = () => {
     getCartData();
   }, [url, token]);
 
+  useEffect(() => {
+    if (cartData.length > 0) {
+      let mrp = 0;
+      let selling = 0;
+      for (let i = 0; i < cartData.length; i++) {
+        const item = cartData[i];
+        mrp += item.productId.oldPrice * item.quantity;
+        selling += item.productId.price * item.quantity;
+      }
+      setTotalMrp(mrp);
+      setTotalSellingPrice(selling);
+    }
+  }, [cartData]);
 
-useEffect(() => {
-  if (cartData.length > 0) {
-    const mrp = cartData.reduce(
-      (acc, item) => acc + (item.productId.oldPrice * item.quantity),
-      0
-    );
-
-    const selling = cartData.reduce(
-      (acc, item) => acc + (item.productId.price * item.quantity),
-      0
-    );
-
-    setTotalMrp(mrp);
-    setTotalSellingPrice(selling);
-  }
-}, [cartData]);
   const loadRazorpayScript = () => {
     return new Promise((resolve) => {
       if (window.Razorpay) {
@@ -79,15 +74,18 @@ useEffect(() => {
       }
       const script = document.createElement("script");
       script.src = "https://checkout.razorpay.com/v1/checkout.js";
-      script.onload = () => resolve(true);
-      script.onerror = () => resolve(false);
+      script.onload = () => {
+        resolve(true);
+      };
+      script.onerror = () => {
+        resolve(false);
+      };
       document.body.appendChild(script);
     });
   };
 
   const handlePayment = async () => {
     setPaymentLoading(true);
-
     try {
       if (showAddressForm && addressFormRef.current) {
         const isFormValid = await addressFormRef.current.submitForm();
@@ -97,54 +95,71 @@ useEffect(() => {
           return;
         }
       }
-
       if (!deliveryAddress) {
         alert("Please add a delivery address before proceeding.");
         setPaymentLoading(false);
         return;
       }
-
       const res = await loadRazorpayScript();
       if (!res) {
         alert("Razorpay SDK failed to load. Are you online?");
         setPaymentLoading(false);
         return;
       }
-
+      const items = cartData.map((item) => ({
+        productId: item.productId._id,
+        name: item.productId.name,
+        price: item.productId.price,
+        oldPrice: item.productId.oldPrice,
+        quantity: item.quantity,
+        total: item.productId.price * item.quantity,
+      }));
       const { data } = await axios.post(
-        `${url}/api/order/makeOrder`,
+        url + "/api/order/makeOrder",
         {
           amount: totalSellingPrice,
-          items: cartData.map(item => ({
-            productId: item.productId._id,
-            name: item.productId.name,
-            price: item.productId.price,
-            oldPrice: item.productId.oldPrice,
-            quantity: item.quantity,
-            total: item.productId.price * item.quantity,
-          }))
+          items: items,
         },
-        { headers: { Authorization: `Bearer ${token}` } }
+        {
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+        }
       );
-
       const options = {
         key: import.meta.env.VITE_RAZORPAY_KEY,
         amount: data.amount,
         currency: "INR",
         name: "Ganesh Store",
-
         description: "Thank you for shopping with us",
         order_id: data.id,
         handler: async (response) => {
           try {
-            const deliveryId = deliveryAddress?.data?._id || deliveryAddress?._id;
-            const cartPayload = cartData.map(item => ({
-              productId: item?.productId?._id,
-              quantity: item?.quantity || 0,
-            })).filter(i => i.productId);
-            const totalQty = cartData.reduce((sum, i) => sum + (i?.quantity || 0), 0);
+            let deliveryId = null;
 
-            await axios.post(`${url}/api/order/verify`, {
+            if (deliveryAddress.data && deliveryAddress.data._id) {
+              deliveryId = deliveryAddress.data._id;
+            } else if (deliveryAddress._id) {
+              deliveryId = deliveryAddress._id;
+            }
+            
+            const cartPayload = [];
+            for (let i = 0; i < cartData.length; i++) {
+              const item = cartData[i];
+              if (item.productId && item.productId._id) {
+                cartPayload.push({
+                  productId: item.productId._id,
+                  quantity: item.quantity || 0,
+                });
+              }
+            }
+
+            let totalQty = 0;
+            for (let i = 0; i < cartData.length; i++) {
+              totalQty += cartData[i].quantity || 0;
+            }
+            
+            await axios.post(url + "/api/order/verify", {
               amount: totalSellingPrice,
               Quantity: totalQty,
               razorpay_order_id: response.razorpay_order_id,
@@ -153,26 +168,25 @@ useEffect(() => {
               cartData: cartPayload,
               delivery_address: deliveryId,
             }, {
-              headers: { Authorization: `Bearer ${token}` }
+              headers: {
+                Authorization: "Bearer " + token,
+              },
             });
-
             alert("Payment Successful!");
           } catch (error) {
             console.log(error);
             alert("Payment verification failed!");
           }
         },
-
         prefill: {
           name: "Ganesh",
-          email: `${localStorage.getItem("email")}`,
+          email: localStorage.getItem("email"),
           contact: "8003779983",
         },
         theme: {
           color: "#F37254",
         },
       };
-
       const paymentObject = new window.Razorpay(options);
       paymentObject.open();
     } catch (err) {
@@ -186,14 +200,16 @@ useEffect(() => {
   const handleDelete = async (id) => {
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await axios.delete(`${url}/api/cart/daleteCart`, {
+      const response = await axios.delete(url + "/api/cart/daleteCart", {
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: "Bearer " + token,
         },
         data: { _id: id },
       });
       if (response.status === 200) {
-        setCartData(cartData.filter((item) => item._id !== id));
+        setCartData((prevCart) => {
+          return prevCart.filter((item) => item._id !== id);
+        });
       }
     } catch (error) {
       console.log("Error deleting item:", error);
@@ -208,7 +224,6 @@ useEffect(() => {
   if (loading) {
     return <CircularProgress />;
   }
-
   if (error) {
     return <Typography color="error">{error}</Typography>;
   }
@@ -219,31 +234,27 @@ useEffect(() => {
         <h1 className="text-3xl font-bold mb-6 text-gray-800">Checkout</h1>
 
         <div className="flex flex-col lg:flex-row gap-6">
-          {/* Cart Items Section */}
+
           <div className="w-full lg:w-[65%]">
             <div className="bg-white rounded-lg shadow-sm border border-gray-200">
               <div className="p-4 border-b border-gray-200">
                 <h2 className="text-xl font-semibold text-gray-800">
-                  Shopping Cart ({cartData.length} {cartData.length === 1 ? 'item' : 'items'})
+                  Shopping Cart ({cartData.length} {cartData.length === 1 ? "item" : "items"})
                 </h2>
               </div>
-
               <div className="max-h-[600px] overflow-y-auto p-4">
                 {cartData.map((item, index) => (
                   <div
                     key={index}
                     className="relative flex flex-col sm:flex-row gap-4 p-4 mb-4 bg-white border border-gray-200 rounded-lg hover:shadow-md transition-shadow"
                   >
-                    {/* Product Image */}
                     <div className="w-full sm:w-32 h-32 flex-shrink-0 bg-gray-50 rounded-lg overflow-hidden flex items-center justify-center">
                       <img
-                        src={item.productId?.images?.[0]}
-                        alt={item.productId?.name || "Product Image"}
+                        src={item.productId.images[0]}
+                        alt={item.productId.name || "Product Image"}
                         className="h-full w-full object-contain"
                       />
                     </div>
-
-                    {/* Product Details */}
                     <div className="flex-1 min-w-0">
                       <div className="pr-8">
                         <h3 className="text-base font-semibold text-gray-800 mb-2 line-clamp-2">
@@ -255,8 +266,6 @@ useEffect(() => {
                         <p className="text-xs text-gray-500 mb-3">
                           Sold by: <span className="font-medium">Ganesh Suthar</span>
                         </p>
-
-                        {/* Price and Quantity */}
                         <div className="flex flex-wrap items-center gap-3 mb-2">
                           <span className="text-lg font-bold text-gray-900">
                             ₹{item.productId.price}
@@ -271,7 +280,6 @@ useEffect(() => {
                             Qty: {item.quantity}
                           </span>
                         </div>
-
                         <div className="flex items-center gap-2 text-xs">
                           <span className="px-2 py-1 bg-red-50 text-red-600 rounded font-medium">
                             Not Returnable
@@ -279,8 +287,6 @@ useEffect(() => {
                         </div>
                       </div>
                     </div>
-
-                    {/* Delete Button */}
                     <Button
                       onClick={() => handleDelete(item._id)}
                       className="!absolute !top-2 !right-2 !min-w-0 !w-8 !h-8 !rounded-full !bg-gray-100 hover:!bg-red-50 !text-gray-600 hover:!text-red-600 !transition-colors"
@@ -293,15 +299,13 @@ useEffect(() => {
             </div>
           </div>
 
-          {/* Order Summary Section */}
+          
           <div className="w-full lg:w-[35%]">
             <div className="sticky top-4 space-y-4">
-              {/* Price Details Card */}
               <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
                 <div className="p-4 bg-gray-50 border-b border-gray-200">
                   <h2 className="text-lg font-semibold text-gray-800">Price Details</h2>
                 </div>
-
                 <div className="p-4 space-y-3">
                   <div className="flex justify-between text-gray-700">
                     <span>Total MRP</span>
@@ -319,14 +323,12 @@ useEffect(() => {
                     <span>Shipping Charges</span>
                     <span className="text-green-600">₹{SHIPPING_CHARGE}</span>
                   </div>
-
                   <div className="border-t border-gray-200 pt-3 mt-3">
                     <div className="flex justify-between items-center">
                       <span className="text-lg font-bold text-gray-900">Total Amount</span>
                       <span className="text-xl font-bold text-gray-900">₹{finalAmount.toLocaleString()}</span>
                     </div>
                   </div>
-
                   <Button
                     className="!w-full !bg-orange-500 hover:!bg-orange-600 !text-white !font-semibold !py-3 !rounded-lg !mt-4 !transition-colors"
                     onClick={handlePayment}
@@ -341,7 +343,7 @@ useEffect(() => {
                       "PLACE ORDER"
                     )}
                   </Button>
-
+                  
                   {!deliveryAddress && (
                     <p className="text-xs text-red-600 text-center mt-2">
                       Please add delivery address to proceed
@@ -349,26 +351,22 @@ useEffect(() => {
                   )}
                 </div>
               </div>
-
-              {/* Delivery Address Card */}
               <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
                 <div className="p-4 bg-gray-50 border-b border-gray-200">
                   <h2 className="text-lg font-semibold text-gray-800">Delivery Address</h2>
                 </div>
-
                 <div className="p-4">
                   {!showAddressForm && deliveryAddress && (
                     <div className="mb-3 p-3 bg-green-50 border border-green-200 rounded-lg">
                       <p className="text-sm font-semibold text-gray-800 mb-2">Selected Address:</p>
                       <p className="text-sm text-gray-700">
-                        {deliveryAddress.data?.address_line || deliveryAddress.address_line}
+                        {deliveryAddress.data ? deliveryAddress.data.address_line : deliveryAddress.address_line}
                       </p>
                       <p className="text-sm text-gray-700">
-                        {deliveryAddress.data?.city || deliveryAddress.city}, {deliveryAddress.data?.state || deliveryAddress.state} - {deliveryAddress.data?.pincode || deliveryAddress.pincode}
+                        {deliveryAddress.data ? deliveryAddress.data.city : deliveryAddress.city}, {deliveryAddress.data ? deliveryAddress.data.state : deliveryAddress.state} - {deliveryAddress.data ? deliveryAddress.data.pincode : deliveryAddress.pincode}
                       </p>
                     </div>
                   )}
-
                   <Button
                     className="!w-full !bg-blue-500 hover:!bg-blue-600 !text-white !font-semibold !py-2 !rounded-lg !transition-colors"
                     onClick={() => setShowAddressForm(!showAddressForm)}
@@ -379,13 +377,9 @@ useEffect(() => {
                         ? "Change Address"
                         : "Add Delivery Address"}
                   </Button>
-
                   {showAddressForm && (
                     <div className="mt-4">
-                      <AddressForm
-                        ref={addressFormRef}
-                        onSubmit={handleAddressSubmit}
-                      />
+                      <AddressForm ref={addressFormRef} onSubmit={handleAddressSubmit} />
                     </div>
                   )}
                 </div>

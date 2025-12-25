@@ -45,7 +45,6 @@ const CategorySlider = () => {
           )}
           {categories.length > 0 && (() => {
             return categories.map((cat, idx) => {
-              // prefer first image from backend if present and looks like a URL; otherwise use fallback
               let imageSrc = null;
               if (cat.images && cat.images.length > 0) imageSrc = cat.images;
               const image = imageSrc;

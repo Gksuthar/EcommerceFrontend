@@ -14,7 +14,7 @@ const MainLayout = () => {
   return (
     <>
       <Header />
-      <Outlet />
+        <Outlet />
       <Footer />
 
       <Drawer open={!!context?.openCartPanel} anchor="right" className="cartBar">

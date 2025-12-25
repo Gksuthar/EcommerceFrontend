@@ -243,6 +243,7 @@ const handlePageChange = (_, pageNum) => {
           <p className="text-gray-400 text-sm mt-2">Try selecting a different category or adjusting filters</p>
         </div>
       ) : paginatedProducts.length > 0 ? (
+        
         paginatedProducts.map((product) => {
           const isProductInCart = cartData.some(
             (cartItem) => cartItem?.productId?._id === product?._id

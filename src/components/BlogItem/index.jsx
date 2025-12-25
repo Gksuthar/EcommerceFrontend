@@ -25,7 +25,7 @@ const BlogItem = ({ post }) => {
           <Link to={`/blog/${post?.slug}`}>{post?.title}</Link>
         </h2>
         <p className="text-[12px] font-[500] text-[rgba(0,0,0,0.8)] mb-4">
-          {post?.description?.substring(0, 120)}
+          {post?.description?.substring(0, 120)}...
         </p>
         <Link className="link font-[500] text-[14px] underline" to={`/blog/${post?.slug}`}>
           ReadMore

@@ -399,6 +399,7 @@ const ProductDetails = () => {
 
                   <br />
                 </div>
+                
                 <div className="reviewForm bg-[#fafafa] p-4 mt-1 ">
                   <h2 className="text-[18px] font-[600] mb-3 ">Add a review</h2>
                   <form onSubmit={handleSubmitReview}>

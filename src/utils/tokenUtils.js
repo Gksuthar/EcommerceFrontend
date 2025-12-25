@@ -17,11 +17,9 @@ export const checkTokenExpiry = () => {
   const token = localStorage.getItem('accessToken');
   
   if (isTokenExpired(token)) {
-    // Clear all auth data
     localStorage.removeItem('accessToken');
     localStorage.removeItem('user');
     
-    // Redirect to login
     window.location.href = '/login';
     
     return false;
@@ -32,12 +30,10 @@ export const checkTokenExpiry = () => {
 
 // Setup automatic token check
 export const setupTokenExpiryCheck = () => {
-  // Check every 60 seconds
   const interval = setInterval(() => {
     checkTokenExpiry();
   }, 60000);
   
-  // Check immediately on page load
   checkTokenExpiry();
   
   return interval;

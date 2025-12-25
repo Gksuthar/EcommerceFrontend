@@ -4,31 +4,26 @@ import toast from "react-hot-toast";
 import { jsPDF } from "jspdf";
 import { useNavigate } from "react-router-dom";
 
-// Centralized App Context
 const MyContext = createContext();
 
 const AppProvider = ({ children }) => {
   const navigate = useNavigate();
   const AppUrl = import.meta.env.VITE_API_URL;
 
-  // Global UI state
   const [openCartPanel, setOpenCartPanel] = useState(false);
   const [openProductDetailsModal, setOpenProductDetailsModal] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [isOpenSidebar, setIsOpenSidebar] = useState(false);
 
-  // Auth/User
   const [isLogin, setIsLogin] = useState(false);
   const [userProfile, setUserProfile] = useState(null);
 
-  // Catalog/Product
   const [allProduct, setAllProduct] = useState([]);
   const [allFeatureProduct, setAllFeatureProduct] = useState([]);
   const [originalProducts, setOriginalProducts] = useState([]);
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // Category
   const [openCategoryId, setOpenCategoryId] = useState(null);
   const [categoryData, setCategoryData] = useState([]);
   const [subCategory, setSubCategory] = useState([]);
@@ -36,14 +31,12 @@ const AppProvider = ({ children }) => {
   const [activeSubCategory, setActiveSubCategory] = useState(null);
   const [loadThirdCat, setLoadThirdCat] = useState(false);
 
-  // Misc
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [search, setSearch] = useState("");
   const [cartLen, setCartLen] = useState(0);
   const [wishlistLen, setWishlistLen] = useState(0);
   const [compareLen, setCompareLen] = useState(0);
 
-  // Effects: products + featured
   useEffect(() => {
     const getAllProductCategory = async () => {
       try {
@@ -68,7 +61,6 @@ const AppProvider = ({ children }) => {
     return () => window.removeEventListener("resize", handleResize);
   }, [AppUrl]);
 
-  // Effects: search filter
   useEffect(() => {
     try {
       const filtered = originalProducts.filter((item) =>
@@ -82,14 +74,12 @@ const AppProvider = ({ children }) => {
     }
   }, [search, originalProducts]);
 
-  // Effects: third-level category
   useEffect(() => {
     if (activeSubCategory) {
       setThirdSubCategory(activeSubCategory.children || []);
     }
   }, [activeSubCategory]);
 
-  // Effects: wishlist count
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
     if (token && isLogin) {
@@ -117,7 +107,6 @@ const AppProvider = ({ children }) => {
     }
   }, [isLogin, AppUrl]);
 
-  // Effects: user details
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
     if (token) {
@@ -143,7 +132,6 @@ const AppProvider = ({ children }) => {
     }
   }, [isLogin, AppUrl]);
 
-  // Effects: categories
   useEffect(() => {
     const fetchCategory = async () => {
       try {
@@ -163,7 +151,6 @@ const AppProvider = ({ children }) => {
     fetchCategory();
   }, [AppUrl]);
 
-  // Actions
   const getProductById = useCallback(async (id) => {
     try {
       setOpenProductDetailsModal(true);
@@ -203,6 +190,7 @@ const AppProvider = ({ children }) => {
       const response = await axios.get(`${AppUrl}/api/routerCategory/`);
       if (response.status === 200) {
         const selectedCategory = response.data.data.find((item) => item._id === categoryId);
+        console.log('---->'+JSON.stringify(selectedCategory))
         setSubCategory(selectedCategory?.children || []);
       }
     } catch (error) {
@@ -397,7 +385,6 @@ const AppProvider = ({ children }) => {
   }, [AppUrl, navigate, openAlertBox]);
 
   const value = useMemo(() => ({
-    // exposed actions/state
     handleOpenProductDetailsModal,
     openCartPanel,
     setOpenCartPanel,
@@ -406,7 +393,6 @@ const AppProvider = ({ children }) => {
     isLogin,
     setIsLogin,
     AppUrl,
-
     userProfile,
     allProduct,
     getProductById,
@@ -437,7 +423,6 @@ const AppProvider = ({ children }) => {
     compareLen,
     setWishlistLen,
     setCompareLen,
-    // modal state/data also provided for App.jsx modal
     openProductDetailsModal,
     handleCloseProductDetailsModal,
     data,
@@ -462,7 +447,6 @@ const AppProvider = ({ children }) => {
     compareLen,
     openProductDetailsModal,
     data,
-    // include local fns and values referenced in value
     AppUrl,
     getProductById,
     logout,

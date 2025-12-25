@@ -47,7 +47,7 @@ const Header = ({setSearch,search}) => {
 
   return (
     <header className="bg-white">
-      <div className="hidden sm:block  top-strip py-2 border-t-[1px] border-gray-250 border-b-[1px]">
+      <div className="hidden sm:block   py-2 border-t-[1px] border-gray-250 border-b-[1px]">
         <div className="container">
           <div className="flex items-center justify-between">
             <div className="col1 w-[50%]">
@@ -79,13 +79,8 @@ const Header = ({setSearch,search}) => {
 
       <div className="header py-2  border-b-[1px]">
         <div className="container flex items-center justify-between">
-          <div
-            onClick={context.openSidebarFunction}
-            className="sm:hidden flex items-center justify-start w-[33%]"
-          >
-            <AiOutlineMenu className="text-2xl" />
-          </div>
-
+         
+          {/* logo img h */}
           <div className="w-[33%] sm:w-[25%]">
             <Link to="/">
               <img src="logo-ecomm.jpg" />
@@ -137,7 +132,7 @@ const Header = ({setSearch,search}) => {
                       </span>
                     </div>
                   </div>
-
+                {/* user icom click per open  */}
                   <Menu
                     anchorEl={anchorEl}
                     id="account-menu"
@@ -222,6 +217,7 @@ const Header = ({setSearch,search}) => {
                   </Tooltip>
                 </Link>
               </li>
+
               <li className="list-none hidden sm:block ">
                 <Link to="/myList">
                   <Tooltip title="Wishlist">
@@ -233,6 +229,7 @@ const Header = ({setSearch,search}) => {
                   </Tooltip>
                 </Link>
               </li>
+              
               <li className="list-none">
                 <Link>
                   <Tooltip title="Cart">

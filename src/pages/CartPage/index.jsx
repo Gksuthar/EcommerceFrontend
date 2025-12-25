@@ -51,7 +51,7 @@ const CartPage = () => {
               <div className="img w-[10%] rounded-md overflow-hidden">
                 <Link to="/productDetails/1212" className="group">
                   <img
-                    src="https://demos.codezeel.com/prestashop/PRS21/PRS210502/img/psblog/b/9/1105_813/b-blog-7.jpg"
+                    src={``}
                     className="w-full group-hover:scale-105 transition-all"
                     alt=""
                   />

@@ -27,6 +27,7 @@ const Orders = () => {
   const startIndex = (currentPage - 1) * itemPerPage;
   const endIndex = startIndex + itemPerPage;
   const currentOrders = orders.slice(startIndex, endIndex);
+  
   const handleOpenProductDetails = (id) => {
     const order = orders.find((item) => item._id === id);
     console.log(order);
@@ -155,7 +156,7 @@ const Orders = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {Array.isArray(perticulerOrder.orderItems) && perticulerOrder.orderItems.length > 0 ? (
+                  {Array.isArray(perticulerOrder.orderItems) && perticulerOrder.orderItems.length > 0 && (
                     perticulerOrder.orderItems.map((it, idx) => (
                       <tr key={idx} className="bg-white border-b hover:bg-gray-50">
                         <td className="px-6 py-4">{it?.productId?._id || '—'}</td>
@@ -172,21 +173,6 @@ const Orders = () => {
                         <td className="px-6 py-4">{it?.subtotal ?? ((it?.price ?? 0) * (it?.quantity ?? 0))}</td>
                       </tr>
                     ))
-                  ) : (
-                    <tr className="bg-white border-b hover:bg-gray-50">
-                      <td className="px-6 py-4">{perticulerOrder?.productId?._id ?? '—'}</td>
-                      <td className="px-6 py-4">{perticulerOrder?.productId?.name ? `${perticulerOrder.productId.name.substring(0, 50)}...` : '—'}</td>
-                      <td className="px-6 py-4">
-                        {perticulerOrder?.productId?.images?.[0] ? (
-                          <img src={perticulerOrder.productId.images[0]} alt="Product" className="w-20 h-20" />
-                        ) : (
-                          <div className="w-20 h-20 bg-gray-100 flex items-center justify-center">—</div>
-                        )}
-                      </td>
-                      <td className="px-6 py-4">{perticulerOrder.Quantity || 1}</td>
-                      <td className="px-6 py-4">{perticulerOrder?.productId?.price ?? '—'}</td>
-                      <td className="px-6 py-4">{(perticulerOrder?.productId?.price ?? 0) * (perticulerOrder?.Quantity || 1)}</td>
-                    </tr>
                   )}
                 </tbody>
               </table>

@@ -34,7 +34,6 @@ const SidebarListning = ({
           );
           const filteredSubCategories= selectedCat?.children || [];
           setSubCategories(filteredSubCategories);
-          // if a subcategory is selected, attempt to set third level options
           if (selectedSubCategory) {
             const selectedSub = filteredSubCategories.find((s) => s.name === selectedSubCategory);
             setThirdCategories(selectedSub?.children || []);

@@ -52,7 +52,7 @@ const Home = () => {
       <HomeSlider />
       <CategorySlider />
 
-      {/* Free Shipping Section and banner */}
+      {/* shipping section */}
       <section className="sm:py-16 py-6 bg-white">
         <div className="container">
           <div className="freShipping w-full p-4 border border-[red] rounded-md py-4 flex items-center justify-between mb-7">
@@ -75,7 +75,7 @@ const Home = () => {
         </div>
       </section>
       
-    {/* {popular product list} */}
+    {/* { poplar product list} */}
       <section className="bg-white  sm:py-8">
         <div className="container">
           <div className="flex flex-col sm:flex-row items-center justify-between">

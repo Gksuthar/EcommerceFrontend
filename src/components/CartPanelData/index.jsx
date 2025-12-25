@@ -26,7 +26,7 @@ const CartPanelData = ({ lenghtOfCart }) => {
         console.log("Error fetching cart data:", error);
       }
     };
-    // Only fetch cart when a token is present (avoid 401s and unnecessary requests)
+    
     if (token) getCartData();
   }, [token, url, lenghtOfCart]);
 

@@ -30,7 +30,7 @@ const Sidebar = ({ openSidebarFunction, isOpenSidebar,fetchCategory }) => {
                 .filter((item) => item.parentId === null)
                 .map((parentItem) => {
                   return (
-                    <li key={parentItem._id} className="list-none relative">
+                    <li key={parentItem._id} className=" relative">
                       <Button
                         className="w-full !text-left !justify-start !px-3 !text-[rgba(0,0,0,0.8)]"
                         onClick={() =>

@@ -31,6 +31,7 @@ const Navigation = () => {
     <>
       <nav className="py-2 sticky top-0  w-full bg-white z-50 ">
         <div className="container    flex items-center justify-end gap-8">
+          
           <div className="hidden sm:block col_1 sm:w-[30%]">
             <Button
               className="!text-black gap-2 w-full"
@@ -43,14 +44,14 @@ const Navigation = () => {
             </Button>
           </div>
 
-          <div className="col_2 !w-[100%] sm:w-[50%]">
+          <div className="col_2 !w-[100%] sm:w-[50%]">  
             <ul className="flex items-center gap-5 nav">
               {context.categoryData &&
                 context.categoryData.map((item, indx) => (
                   <li
                     key={indx}
                     className="list-none relative group"
-                    onMouseEnter={() => showMenuCategory(item._id, item.name)}
+                    onMouseEnter={() => showMenuCategory(item._id, item?.name)}
                   >
                     <Link
                       to="/"
@@ -68,6 +69,7 @@ const Navigation = () => {
                       </Button>
                     </Link>
 
+                        {/* for sub menu ---*/}
                     <div className="submenu absolute top-full left-0 min-w-[200px] bg-white shadow-md opacity-0 invisible group-hover:visible group-hover:opacity-100 transition-all z-50">
                       <ul className="relative">
                         {context.subCategory.map((subItem, subIndx) => (

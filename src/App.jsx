@@ -36,7 +36,7 @@ function AppContent() {
     <>
       <Routes>
         <Route element={<MainLayout /> }>
-          <Route path="/" element={<Home />} />
+          <Route index element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/register" element={<Register />} />
@@ -55,6 +55,7 @@ function AppContent() {
         </Route>
       </Routes>
       <Toaster />
+
       <Dialog
         open={openProductDetailsModal}
         fullWidth={true}
