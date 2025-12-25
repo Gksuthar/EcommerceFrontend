@@ -136,7 +136,6 @@ const Checkout = () => {
         handler: async (response) => {
           try {
             let deliveryId = null;
-
             if (deliveryAddress.data && deliveryAddress.data._id) {
               deliveryId = deliveryAddress.data._id;
             } else if (deliveryAddress._id) {

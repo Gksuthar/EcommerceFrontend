@@ -23,7 +23,6 @@ const [currentPage, setCurrentPage] = useState(1);
 const [loadingStates, setLoadingStates] = useState({});        
 const [isCartLoading, setCartLoading] = useState(false);       
 
-// Context + API URL
 const context = useContext(MyContext);
 const url = context.AppUrl;
 const token = localStorage.getItem("accessToken");
@@ -50,12 +49,10 @@ useEffect(() => {
   const subCategory = normalize(selectedSubCategory);
   const thirdCategory = normalize(selectedThirdCategory);
 
-  // 1️⃣ Filter main category
   let result = context.allProduct.filter(
     (p) => normalize(p.catName) === mainCategory
   );
 
-  // 2️⃣ Filter sub category (if selected)
   if (subCategory) {
     result = result.filter((p) => normalize(p.subCat) === subCategory);
   }
